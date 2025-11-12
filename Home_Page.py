@@ -7,7 +7,7 @@ st.title("Web Development Lab03")
 # TODO: Fill out your team number, section, and team members
 
 st.header("CS 1301")
-st.subheader("Team 33, Web Development - Section X")
+st.subheader("Team 33, Web Development - Section B")
 st.subheader("Sneh Patel, Sanyam Mittal")
 
 
@@ -21,7 +21,7 @@ st.subheader("Sneh Patel, Sanyam Mittal")
 st.write("""
 Welcome to our Streamlit Web Development Lab03 app! You can navigate between the pages using the sidebar to the left. The following pages are:
 
-1. **👾 The Video Game Index 🎮:** Explore and add to a game ratings comparison chart with interactive filters. Search for any game to view detailed information and add it to the chart. Then play Higher or Lower to test your knowledge of video game ratings!
+1. **👾 The Video Game Index:** Explore and add to a game ratings comparison chart with interactive filters. Search for any game to view detailed information and add it to the chart. Then play Higher or Lower to test your knowledge of video game ratings!
 2.
 3.
 4.

@@ -5,7 +5,7 @@ import time
 import pandas as pd
 
 # --- IGDB Setup ---
-CLIENT_ID = st.secrets["CLIENT_ID"]
+CLIENT_ID = st.secrets["CLIENT_ID"] 
 ACCESS_TOKEN = st.secrets["ACCESS_TOKEN"]
 
 headers = {
@@ -13,7 +13,7 @@ headers = {
     "Authorization": f"Bearer {ACCESS_TOKEN}"
 }
 
-# --- Get Games from IGDB API ---
+# --- Get Games from IGDB API for Higher or Lower Game ---
 def fetch_games():
     all_games = []
     
@@ -43,8 +43,8 @@ def fetch_games():
             
             all_games.extend(games)
             
-        except Exception as e:
-            st.error(f"Whoops. There was an error fetching games for the rating range {min_rating}-{max_rating}: {e}")
+        except:
+            st.error(f"Whoops. There was an error fetching games for the rating range {min_rating}-{max_rating}.")
             continue
     
     if len(all_games) < 2:
@@ -52,15 +52,15 @@ def fetch_games():
         return []
     
     # Multiple rounds of shuffling for better randomization
-    for fun in range(5):
+    for lolololololol in range(5):
         random.shuffle(all_games)
     
     return all_games
 
 # --- Get Initial Games for Chart ---
 def fetch_initial_games():
-    # Get GTA V, Minecraft, and Rocket League for initial chart data
-    game_names = ["Grand Theft Auto V", "Minecraft", "Rocket League"]
+    # Get games for initial chart data
+    game_names = ["Grand Theft Auto V", "Minecraft", "Rocket League", "The Legend of Zelda: Breath of the Wild", "The Last of Us", "The Sims 4", "Rainbow Six Siege", "Fortnite", "Overwatch", "League of Legends", "Valorant", "Mario Hotel", "Bubsy 3D"]
     games = []
     
     for game_name in game_names:
@@ -127,8 +127,7 @@ def create_comparison_chart(games_list, min_rating=0, max_rating=100, selected_g
         'Rating': game_ratings
     })
     
-    # Sort by rating descending
-    bar = bar.sort_values('Rating', ascending=False)
+    bar = bar.sort_values('Rating')
     bar = bar.set_index('Game')
     
     return bar
@@ -176,39 +175,58 @@ def display_game_details(game):
             st.metric("Expert Rating", f"{game['rating']:.1f}/100")
         
         if 'aggregated_rating' in game:
-            st.metric("User Rating", f"{game['aggregated_rating']:.1f}/100", 
-                     help=f"Based on {game.get('aggregated_rating_count', 'N/A')} user ratings")
+            st.metric("User Rating", f"{game['aggregated_rating']:.1f}/100")
         
         # Display genres
         if 'genres' in game:
-            genres = [g['name'] for g in game['genres']]
-            st.write(f"**Genres:** {', '.join(genres)}")
+            genres = []
+            for g in game['genres']:
+                if 'name' in g:
+                    genres.append(g['name'])
+            genre_str = ""
+            for genre in genres:
+                genre_str += genre + ", "
+            genre_str = genre_str[:-2]
+            if genre_str:
+                st.write(f"**Genres:** {genre_str}")
         
         # Display companies
         if 'involved_companies' in game:
             companies = []
-            for ic in game['involved_companies'][:3]:  # Show first 3 companies
+            for ic in game['involved_companies']:
                 if 'company' in ic and 'name' in ic['company']:
                     companies.append(ic['company']['name'])
-            if companies:
-                st.write(f"**Companies:** {', '.join(companies)}")
+            company_str = ""
+            for company in companies:
+                company_str += company + ", "
+            company_str = company_str[:-2]
+            if company_str:
+                st.write(f"**Companies:** {company_str}")
         
         # Display release date
         if 'first_release_date' in game:
-            from datetime import datetime
-            release_date = datetime.fromtimestamp(game['first_release_date'])
+            from datetime import datetime # too lazy to move to top hahaha
+            release_date = datetime.fromtimestamp(game['first_release_date']) # API provides timestamp in POSIX time so convert readable format
             st.write(f"**Release Date:** {release_date.strftime('%B %d, %Y')}")
         
         # Display platforms
         if 'platforms' in game:
-            platforms = [p['name'] for p in game['platforms'][:5]]  # Show first 5 platforms
-            st.write(f"**Platforms:** {', '.join(platforms)}")
+            platforms = []
+            for p in game['platforms']:
+                if 'name' in p:
+                    platforms.append(p['name'])
+            platform_str = ""
+            for platform in platforms:
+                platform_str += platform + ", "
+            platform_str = platform_str[:-2]
+            if platform_str:
+                st.write(f"**Platforms:** {platform_str}")
     
     # Display summary
     if 'summary' in game:
-        st.markdown("---")
-        st.write("**Summary:**")
+        st.write(f"**Summary:**")
         st.write(game['summary'])
+
 
 
 # --- Display the game over screen with final score and play again option ---
@@ -242,10 +260,10 @@ def show_setup_screen():
         # Time slider (15 seconds to 5 minutes)
         selected_minutes = st.slider(
             "Game duration (minutes):",
-            min_value=0.25,
+            min_value=0.5,
             max_value=5.0,
             value=2.0,
-            step=0.25,
+            step=0.5,
             format="%.1f"
         )
         
@@ -275,24 +293,20 @@ def show_setup_screen():
                 st.session_state.selected_duration = selected_seconds
             st.rerun()
 
-# --- Game Logic ---
-def main():
-    st.title("👾 The Video Game Index 🎮")
-    
+# --- Search and Graph Section ---
+def display_search_and_graph():
+    """Display the game search and comparison chart section"""
     # Initialize session state for added games
     if 'chart_games' not in st.session_state:
         with st.spinner("Loading initial games..."):
             st.session_state.chart_games = fetch_initial_games()
-    
-    # === GAME SEARCH SECTION ===
-    st.markdown("---")
 
     # Display bar graph if games exist
     if st.session_state.chart_games:
         st.subheader(f"📊 Game Ratings Comparison")
         
         # Filters Section
-        with st.expander("⚙️ Filters", expanded=False):
+        with st.expander("Filters", expanded=False):
             col_f1, col_f2 = st.columns(2)
             
             with col_f1:
@@ -335,7 +349,7 @@ def main():
             
             # List of added games with remove option
             st.markdown("---")
-            st.subheader("🎮 Added Games")
+            st.subheader("Added Games")
             
             for idx, game in enumerate(st.session_state.chart_games):
                 col_g1, col_g2, col_g3, col_g4 = st.columns([3, 1, 1, 1])
@@ -358,12 +372,12 @@ def main():
                         st.session_state.chart_games.pop(idx)
                         st.rerun()
         else:
-            st.info("No games match the current filters. Try adjusting your filter settings.")
+            st.info("No games match the current filters. Adjust your filter settings.")
     
     st.markdown("---")
 
+
     # Search and add games
-    
     col_search, col_clear = st.columns([4, 1])
     
     with col_search:
@@ -374,7 +388,7 @@ def main():
     
     with col_clear:
         st.write("")  # Spacing
-        st.write("")  # Spacing b/c for some reason the button is not centered without it
+        st.write("")  # Spacing again b/c for some reason the button is not centered without it
         if st.button("🔄 Reset Chart", use_container_width=True):
             with st.spinner("Resetting to default games..."):
                 st.session_state.chart_games = fetch_initial_games()
@@ -425,17 +439,14 @@ def main():
                         st.session_state.chart_games.append(selected_game)
                         st.rerun()
             
-            st.markdown("---")
             display_game_details(selected_game)
         else:
-            st.error(f"No games found matching '{search_query}'. Try a different search term!")
-    
-    st.markdown("---")
+            st.error(f"No games found matching \"{search_query}\". Try a different search term.")
 
-    # === END OF SEARCH SECTION ===
-    
-    st.header("🎮 Play Higher or Lower Game")
 
+# --- Higher or Lower Game Logic Section ---
+def play_higher_or_lower_game():
+    """Display and run the Higher or Lower game"""
     # Show setup screen if game hasn't started
     if not st.session_state.get("game_started", False):
         show_setup_screen()
@@ -552,7 +563,7 @@ def guess(higher):
     
     # Check if we have more games
     if st.session_state.index + 1 >= len(st.session_state.games):
-        st.success(f"🎉 You've completed all games! Final score: {st.session_state.score}")
+        st.success(f"You've completed all games! Final score: {st.session_state.score}")
         st.session_state.game_over = True
         st.session_state.game_over_reason = "complete"
         time.sleep(2)
@@ -564,6 +575,22 @@ def guess(higher):
     # Pause to show result, then continue
     time.sleep(1)
     st.rerun()
+
+
+# --- Main Application ---
+def main():
+    """Main application entry point"""
+    st.title("The Video Game Index")
+    
+    # ========== SECTION 1: SEARCH AND GRAPH ==========
+    st.markdown("---")
+    st.header("🔍 Game Search & Ratings Comparison")
+    display_search_and_graph()
+    
+    # ========== SECTION 2: HIGHER OR LOWER GAME ==========
+    st.markdown("---")
+    st.header("🎮 Higher or Lower Game")
+    play_higher_or_lower_game()
 
 
 if __name__ == "__main__":

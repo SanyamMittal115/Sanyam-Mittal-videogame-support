@@ -2,6 +2,4 @@ streamlit
 google-generativeai
 requests
 pandas
-time
-random
 datetime
