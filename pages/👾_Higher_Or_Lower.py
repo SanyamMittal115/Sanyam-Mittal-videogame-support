@@ -17,12 +17,12 @@ headers = {
 def fetch_games():
     all_games = []
     
-    # Fetch games from different rating ranges to ensure variety
+    # Get games from different rating ranges to ensure variety
     rating_ranges = [
-        (20, 40),   # Low rated games
-        (40, 60),   # Medium-low rated games  
-        (60, 80),   # Medium-high rated games
-        (80, 100)   # High rated games
+        (20, 40), 
+        (40, 60),   
+        (60, 80),   
+        (80, 100)   
     ]
     
     for min_rating, max_rating in rating_ranges:
@@ -38,7 +38,6 @@ def fetch_games():
         try:
             # Have to use POST request to send the query to IGDB API instead of GET
             response = requests.post("https://api.igdb.com/v4/games", headers=headers, data=query)
-            response.raise_for_status()
             games = response.json()
             
             all_games.extend(games)
@@ -48,12 +47,8 @@ def fetch_games():
             continue
     
     if len(all_games) < 2:
-        st.error(f"Not enough games fetched. Only got {len(all_games)} games. Ask Sneh or Sunny because there API may have rate limits or authentication issues.")
+        st.error(f"Not enough games fetched. Only got {len(all_games)} games. Ask Sneh or Sunny because their API may have rate limits or authentication issues.")
         return []
-    
-    # Multiple rounds of shuffling for better randomization
-    for lolololololol in range(5):
-        random.shuffle(all_games)
     
     return all_games
 
@@ -73,11 +68,10 @@ def fetch_initial_games():
         
         try:
             response = requests.post("https://api.igdb.com/v4/games", headers=headers, data=query)
-            response.raise_for_status()
             results = response.json()
             if results and 'rating' in results[0]:
                 games.append(results[0])
-        except Exception as e:
+        except:
             continue
     
     return games
@@ -87,7 +81,6 @@ def create_comparison_chart(games_list, min_rating=0, max_rating=100, selected_g
     if not games_list:
         return None
     
-    # Apply filters
     filtered_games = []
     for game in games_list:
         # Filter by rating
@@ -115,7 +108,7 @@ def create_comparison_chart(games_list, min_rating=0, max_rating=100, selected_g
     if not filtered_games:
         return None
     
-    # Create bar graph
+    # Bar graph data stuff
     game_names = []
     game_ratings = []
     for game in filtered_games:
@@ -133,9 +126,8 @@ def create_comparison_chart(games_list, min_rating=0, max_rating=100, selected_g
     return bar
 
 
-# --- Search for Specific Game ---
+# --- Search for specific game ---
 def search_game(game_name):
-    """Search for a specific game by name"""
     query = f"""
     search "{game_name}";
     fields name, rating, cover.url, summary, genres.name, involved_companies.company.name, 
@@ -145,17 +137,15 @@ def search_game(game_name):
     
     try:
         response = requests.post("https://api.igdb.com/v4/games", headers=headers, data=query)
-        response.raise_for_status()
         games = response.json()
         return games
-    except Exception as e:
-        st.error(f"Error searching for game: {e}")
+    except:
+        st.error(f"Error searching for game. Ask Sneh or Sunny because their API may have rate limits or authentication issues.")
         return []
 
 
-# --- Display Game Details ---
+# --- Display game details ---
 def display_game_details(game):
-    """Display detailed information about a game"""
     col1, col2 = st.columns([1, 2])
     
     with col1:
@@ -227,8 +217,6 @@ def display_game_details(game):
         st.write(f"**Summary:**")
         st.write(game['summary'])
 
-
-
 # --- Display the game over screen with final score and play again option ---
 def show_game_over_screen():
     st.markdown("## Game Over!")
@@ -293,10 +281,8 @@ def show_setup_screen():
                 st.session_state.selected_duration = selected_seconds
             st.rerun()
 
-# --- Search and Graph Section ---
+# --- Display the game search and comparison chart section ---
 def display_search_and_graph():
-    """Display the game search and comparison chart section"""
-    # Initialize session state for added games
     if 'chart_games' not in st.session_state:
         with st.spinner("Loading initial games..."):
             st.session_state.chart_games = fetch_initial_games()
@@ -355,18 +341,14 @@ def display_search_and_graph():
                 col_g1, col_g2, col_g3, col_g4 = st.columns([3, 1, 1, 1])
                 
                 with col_g1:
-                    # Game name
                     st.write(f"**{game['name']}**")
-                
                 with col_g2:
                     st.write(f"⭐ {game['rating']:.1f}")
-                
                 with col_g3:
                     if 'first_release_date' in game:
                         from datetime import datetime
                         year = datetime.fromtimestamp(game['first_release_date']).year
                         st.write(f"📅 {year}")
-                
                 with col_g4:
                     if st.button("❌", key=f"remove_{idx}", use_container_width=True):
                         st.session_state.chart_games.pop(idx)
@@ -444,9 +426,8 @@ def display_search_and_graph():
             st.error(f"No games found matching \"{search_query}\". Try a different search term.")
 
 
-# --- Higher or Lower Game Logic Section ---
+# --- Higher or Lower game logic section ---
 def play_higher_or_lower_game():
-    """Display and run the Higher or Lower game"""
     # Show setup screen if game hasn't started
     if not st.session_state.get("game_started", False):
         show_setup_screen()
@@ -572,22 +553,18 @@ def guess(higher):
     
     st.session_state.next = st.session_state.games[st.session_state.index + 1]
 
-    # Pause to show result, then continue
     time.sleep(1)
     st.rerun()
 
 
 # --- Main Application ---
 def main():
-    """Main application entry point"""
     st.title("The Video Game Index")
-    
-    # ========== SECTION 1: SEARCH AND GRAPH ==========
+
     st.markdown("---")
     st.header("🔍 Game Search & Ratings Comparison")
     display_search_and_graph()
     
-    # ========== SECTION 2: HIGHER OR LOWER GAME ==========
     st.markdown("---")
     st.header("🎮 Higher or Lower Game")
     play_higher_or_lower_game()
