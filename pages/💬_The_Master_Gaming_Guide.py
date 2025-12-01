@@ -3,9 +3,9 @@ import google.generativeai as genai
 import requests
 
 # IGDB API credentials (same as other pages)
-clientId = "v6yo10056ivny6edxfhgffzzehj0xi"
-accessToken = "c2bjrpjxl4f4d3zh4b44xfvh7bn37w"
-geminiKey = "AIzaSyCKOVdIzGdij5QOUT2YrVCJ1Fzh6qzsOkc"
+clientId = st.secrets["CLIENT_ID"]
+accessToken = st.secrets["ACCESS_TOKEN"]
+geminiKey = st.secrets["GEMINI_KEY"]
 
 apiHeaders = {
 	"Client-ID": clientId,
