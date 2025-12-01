@@ -21,10 +21,9 @@ st.subheader("Sneh Patel, Sanyam Mittal")
 st.write("""
 Welcome to our Streamlit Web Development Lab03 app! You can navigate between the pages using the sidebar to the left. The following pages are:
 
-1. **👾 The Video Game Index:** Explore and add to a game ratings comparison chart with interactive filters. Search for nearly ANY game to view detailed information and add it to the chart. Then play Higher or Lower to test your knowledge of video game ratings!
-2.
-3.
-4.
+1. **PHASE 2; 👾 The Video Game Index:** Explore and add to a game ratings comparison chart with interactive filters. Search for any game to view detailed information and add it to the chart. Then play Higher or Lower to test your knowledge of video game ratings!
+2. **PHASE 3; 🕹️ The Game Recommender:** Are you a gaming lover but don't know what to play next? Don't fret, Sneh and Sunny's awesome new AI-powered game recommender is for you. Simply select a few games you enjoy along with a few genres and our advanced LLM will analyze your information and select 3 games it thinks you'll love!
+3. **PHASE 4; 💬 The Master Gaming Guide:** Are you stuck in a game and need Sneh and Sunny's help? Our expert gaming guide chatbot can help you overcome challenges, solve puzzles, and progress through difficult sections of video games with detailed strategies and tips.
 
 """)
 
