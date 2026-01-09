@@ -5,7 +5,11 @@ st.title("Web Development Lab03")
 
 # Assignment Data 
 # TODO: Fill out your team number, section, and team members
-
+@st.cache_resource
+def init_llm():
+    import google.generativeai as genai
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+    return genai.GenerativeModel("gemini-pro")
 
 st.subheader("Sneh Patel and Sanyam Mittal")
 
