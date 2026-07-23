@@ -548,17 +548,17 @@ def higherOrLowerGame():
     with col1:
         st.markdown("### Current Game")
         # --- AFTER ---
-# Safely retrieve the cover object and URL
-cover_data = currentGame.get("cover")
-cover_url = cover_data.get("url") if isinstance(cover_data, dict) else None
-
-if cover_url:
-    # Ensure proper URL formatting if IGDB protocol-relative URL (e.g. "//images.igdb...")
-    full_url = "https:" + cover_url if cover_url.startswith("//") else cover_url
-    st.image(full_url, width=250)
-else:
-    # Fallback placeholder image when no cover is found
-    st.image("https://via.placeholder.com/250x350?text=No+Cover+Available", width=250)
+    # Safely retrieve the cover object and URL
+    cover_data = currentGame.get("cover")
+    cover_url = cover_data.get("url") if isinstance(cover_data, dict) else None
+    
+    if cover_url:
+        # Ensure proper URL formatting if IGDB protocol-relative URL (e.g. "//images.igdb...")
+        full_url = "https:" + cover_url if cover_url.startswith("//") else cover_url
+        st.image(full_url, width=250)
+    else:
+        # Fallback placeholder image when no cover is found
+        st.image("https://via.placeholder.com/250x350?text=No+Cover+Available", width=250)
         st.subheader(currentGame["name"])
         st.write(f"⭐ **Rating: {currentGame['rating']:.1f}**")
         if currentGame.get("summary"):
